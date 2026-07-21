@@ -3,6 +3,7 @@
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
 Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
@@ -10,6 +11,8 @@ Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.st
 Route::get('/', [InventoryController::class,'index']);
 Route::delete('/inventory/{itemId}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
 Route::put('/inventory/{itemId}', [InventoryController::class, 'update'])->name('inventory.update');
+
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
 Route::get('/warehouse', [WarehouseController::class,'index'])
     ->name('warehouse');
