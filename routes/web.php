@@ -4,6 +4,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReorderController;
 
 Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
 Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
@@ -20,3 +21,5 @@ Route::get('/warehouse', [WarehouseController::class,'index'])
     Route::post('/warehouse', [WarehouseController::class, 'store'])->name('warehouse.store');
 
     Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
+
+Route::post('/reorder', [ReorderController::class, 'store'])->name('reorder.store');
