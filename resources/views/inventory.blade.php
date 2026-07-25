@@ -157,6 +157,11 @@
         .modal-items-table input[type="number"] { width:70px; padding:5px 8px; border:1px solid #e2e8f0; border-radius:6px; font-size:12px; }
         .modal-items-table .rm-row { background:none; border:none; cursor:pointer; color:#ef4444; }
         .modal-items-table .rm-row svg { width:14px; height:14px; stroke:#ef4444; fill:none; }
+        .add-item-row { display:flex; gap:8px; margin-top:10px; }
+        .add-item-row select { flex:1; }
+        .btn-add-item { padding:8px 14px; border-radius:8px; border:1px solid #e0e7ff; background:#eef2ff; color:#4338ca; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+        .btn-add-item:hover { background:#e0e7ff; }
+        .btn-add-item:disabled { opacity:0.5; cursor:not-allowed; }
         .modal-footer { padding:16px 22px; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:10px; flex-shrink:0; }
         .btn-cancel { padding:9px 18px; border-radius:8px; border:1px solid #e2e8f0; background:white; color:#334155; font-size:12.5px; font-weight:600; cursor:pointer; }
         .btn-cancel:hover { background:#f8fafc; }
@@ -222,7 +227,7 @@
                     <input type="text" placeholder="Search products..." class="search">
                 </div>
                 <div class="divider"></div>
-                <button type="button" class="btn-reorder" onclick="openReorderModal()">
+                <button type="button" class="btn-reorder" id="topReorderBtn">
                     <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
                     Reorder Request
                 </button>
@@ -288,7 +293,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="productTableBody">
                                 @forelse($items as $item)
                                     <tr>
                                         <td><span class="sku">{{ $item->sku }}</span></td>
@@ -304,7 +309,11 @@
                                         </td>
                                         <td>
                                             @if($item->qty <= 10)
-                                                <button type="button" class="btn-row-reorder" onclick='openReorderModal({id: {{ $item->id }}, sku: @json($item->sku), name: @json($item->productName), qty: {{ $item->qty }}})'>
+                                                <button type="button" class="btn-row-reorder js-reorder-item"
+                                                    data-id="{{ $item->id }}"
+                                                    data-sku="{{ $item->sku }}"
+                                                    data-name="{{ $item->productName }}"
+                                                    data-qty="{{ $item->qty }}">
                                                     <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
                                                     Reorder
                                                 </button>
@@ -364,7 +373,7 @@
                     <div class="modal-title">Reorder request</div>
                     <div class="modal-subtitle">Sends a stock request order to procurement</div>
                 </div>
-                <button type="button" class="modal-close" onclick="closeReorderModal()">
+                <button type="button" class="modal-close" id="modalCloseBtn">
                     <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
             </div>
@@ -405,6 +414,13 @@
                                 <!-- rows injected by JS -->
                             </tbody>
                         </table>
+
+                        <div class="add-item-row">
+                            <select class="form-select" id="addItemSelect">
+                                <option value="">+ Add a low-stock item...</option>
+                            </select>
+                            <button type="button" class="btn-add-item" id="addItemBtn">Add</button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -413,7 +429,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeReorderModal()">Cancel</button>
+                    <button type="button" class="btn-cancel" id="modalCancelBtn">Cancel</button>
                     <button type="submit" class="btn-submit" id="reorderSubmitBtn">Send request</button>
                 </div>
             </form>
@@ -423,9 +439,24 @@
     <script>
         let reorderItems = [];
 
-        function openReorderModal(preselectedItem) {
-            reorderItems = preselectedItem ? [{...preselectedItem, requestQty: Math.max((preselectedItem.qty || 0) * 3, 10)}] : [];
+        // Build the master list of low-stock items straight from the rendered table
+        // (data-* attributes avoid any quote/apostrophe issues from product names).
+        function getLowStockItemsFromTable() {
+            return Array.from(document.querySelectorAll('.js-reorder-item')).map(btn => ({
+                id: parseInt(btn.dataset.id, 10),
+                sku: btn.dataset.sku,
+                name: btn.dataset.name,
+                qty: parseInt(btn.dataset.qty, 10)
+            }));
+        }
+
+        function openReorderModal(preselectedItems) {
+            reorderItems = (preselectedItems || []).map(it => ({
+                ...it,
+                requestQty: Math.max((it.qty || 0) * 3, 10)
+            }));
             renderReorderItems();
+            populateAddItemSelect();
             document.getElementById('reorderAlert').style.display = 'none';
             document.getElementById('reorderModal').classList.add('open');
         }
@@ -437,26 +468,92 @@
         function renderReorderItems() {
             const body = document.getElementById('reorderItemsBody');
             if (reorderItems.length === 0) {
-                body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:16px;">No item selected. Use the Reorder button on a low stock item, or add one below.</td></tr>';
+                body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:16px;">No items yet. Use the dropdown below to add a low-stock item.</td></tr>';
                 return;
             }
             body.innerHTML = reorderItems.map((it, idx) => `
                 <tr>
                     <td>
-                        <div style="font-weight:600; color:#0f172a;">${it.name}</div>
-                        <div style="color:#94a3b8; font-size:11px;">${it.sku}</div>
+                        <div style="font-weight:600; color:#0f172a;"></div>
+                        <div style="color:#94a3b8; font-size:11px;"></div>
                     </td>
-                    <td>${it.qty}</td>
-                    <td><input type="number" min="1" value="${it.requestQty}" onchange="reorderItems[${idx}].requestQty = parseInt(this.value) || 1"></td>
-                    <td><button type="button" class="rm-row" onclick="removeReorderItem(${idx})"><svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td>
+                    <td></td>
+                    <td><input type="number" min="1" value="${it.requestQty}" data-idx="${idx}" class="js-qty-input"></td>
+                    <td><button type="button" class="rm-row js-remove-item" data-idx="${idx}"><svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td>
                 </tr>
             `).join('');
+
+            // Fill text content via textContent (not string interpolation) so item
+            // names with quotes/HTML-special characters render safely.
+            Array.from(body.querySelectorAll('tr')).forEach((row, idx) => {
+                const it = reorderItems[idx];
+                row.children[0].children[0].textContent = it.name;
+                row.children[0].children[1].textContent = it.sku;
+                row.children[1].textContent = it.qty;
+            });
         }
 
-        function removeReorderItem(idx) {
-            reorderItems.splice(idx, 1);
-            renderReorderItems();
+        function populateAddItemSelect() {
+            const select = document.getElementById('addItemSelect');
+            const all = getLowStockItemsFromTable();
+            const alreadyAdded = new Set(reorderItems.map(it => it.id));
+            const available = all.filter(it => !alreadyAdded.has(it.id));
+
+            select.innerHTML = '<option value="">+ Add a low-stock item...</option>' +
+                available.map(it => `<option value="${it.id}">${it.name} (${it.sku}) — on hand: ${it.qty}</option>`).join('');
+
+            document.getElementById('addItemBtn').disabled = available.length === 0;
         }
+
+        // Event delegation: qty edits + row removal inside the items table
+        document.getElementById('reorderItemsBody').addEventListener('input', function(e) {
+            if (e.target.classList.contains('js-qty-input')) {
+                const idx = parseInt(e.target.dataset.idx, 10);
+                reorderItems[idx].requestQty = parseInt(e.target.value, 10) || 1;
+            }
+        });
+
+        document.getElementById('reorderItemsBody').addEventListener('click', function(e) {
+            const btn = e.target.closest('.js-remove-item');
+            if (btn) {
+                const idx = parseInt(btn.dataset.idx, 10);
+                reorderItems.splice(idx, 1);
+                renderReorderItems();
+                populateAddItemSelect();
+            }
+        });
+
+        document.getElementById('addItemBtn').addEventListener('click', function() {
+            const select = document.getElementById('addItemSelect');
+            const id = parseInt(select.value, 10);
+            if (!id) return;
+            const item = getLowStockItemsFromTable().find(it => it.id === id);
+            if (item) {
+                reorderItems.push({ ...item, requestQty: Math.max(item.qty * 3, 10) });
+                renderReorderItems();
+                populateAddItemSelect();
+            }
+        });
+
+        // Top toolbar button: auto-populate with every low-stock item currently in the table
+        document.getElementById('topReorderBtn').addEventListener('click', function() {
+            openReorderModal(getLowStockItemsFromTable());
+        });
+
+        // Per-row reorder buttons (event delegation, safe against special characters in names)
+        document.getElementById('productTableBody').addEventListener('click', function(e) {
+            const btn = e.target.closest('.js-reorder-item');
+            if (!btn) return;
+            openReorderModal([{
+                id: parseInt(btn.dataset.id, 10),
+                sku: btn.dataset.sku,
+                name: btn.dataset.name,
+                qty: parseInt(btn.dataset.qty, 10)
+            }]);
+        });
+
+        document.getElementById('modalCloseBtn').addEventListener('click', closeReorderModal);
+        document.getElementById('modalCancelBtn').addEventListener('click', closeReorderModal);
 
         document.getElementById('reorderModal').addEventListener('click', function(e) {
             if (e.target === this) closeReorderModal();
