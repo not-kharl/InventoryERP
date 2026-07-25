@@ -51,6 +51,11 @@
         .avatar-btn { width:34px; height:34px; background:linear-gradient(135deg,#6366f1,#818cf8); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(99,102,241,0.3); }
         .divider { width:1px; height:20px; background:#e2e8f0; }
 
+        /* REORDER BUTTON */
+        .btn-reorder { display:inline-flex; align-items:center; gap:7px; background:#6366f1; color:white; border:none; padding:8px 16px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; box-shadow:0 2px 8px rgba(99,102,241,0.3); transition:all 0.15s; white-space:nowrap; }
+        .btn-reorder:hover { background:#4f46e5; transform:translateY(-1px); box-shadow:0 4px 10px rgba(99,102,241,0.35); }
+        .btn-reorder svg { width:14px; height:14px; stroke:white; fill:none; flex-shrink:0; }
+
         /* PAGE TRANSITION */
         @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .content { flex:1; overflow-y:auto; padding:24px 28px; animation:fadeIn 0.25s ease; }
@@ -94,6 +99,7 @@
         .card-title-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
         .card-badge { font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:20px; }
         .card-badge.gray { color:#64748b; background:#f1f5f9; }
+        .card-header-actions { display:flex; align-items:center; gap:10px; }
 
         /* TABLE */
         table { width:100%; border-collapse:collapse; }
@@ -112,6 +118,11 @@
         .badge-green { background:#d1fae5; color:#065f46; border:1px solid #a7f3d0; }
         .badge-red { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
 
+        /* ROW REORDER BUTTON */
+        .btn-row-reorder { display:inline-flex; align-items:center; gap:4px; background:#eef2ff; color:#4338ca; border:1px solid #e0e7ff; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+        .btn-row-reorder:hover { background:#e0e7ff; border-color:#c7d2fe; }
+        .btn-row-reorder svg { width:11px; height:11px; stroke:#4338ca; fill:none; flex-shrink:0; }
+
         /* ACTIVITY */
         .activity-item { display:flex; gap:12px; padding:11px 20px; border-bottom:1px solid #f8fafc; align-items:flex-start; }
         .activity-item:last-child { border-bottom:none; }
@@ -121,6 +132,40 @@
         .activity-time { font-size:10.5px; color:#94a3b8; margin-top:2px; font-weight:500; }
         .empty-state { padding:48px 20px; text-align:center; color:#94a3b8; font-size:13px; }
         .empty-state svg { width:36px; height:36px; stroke:#cbd5e1; fill:none; margin:0 auto 10px; display:block; }
+
+        /* REORDER MODAL */
+        .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.5); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+        .modal-overlay.open { display:flex; }
+        .modal-box { background:white; border-radius:14px; width:100%; max-width:560px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 50px rgba(0,0,0,0.2); }
+        .modal-header { padding:18px 22px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+        .modal-title { font-size:15px; font-weight:700; color:#0f172a; }
+        .modal-subtitle { font-size:11.5px; color:#94a3b8; margin-top:2px; font-weight:400; }
+        .modal-close { width:28px; height:28px; border-radius:7px; border:none; background:transparent; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+        .modal-close:hover { background:#f1f5f9; }
+        .modal-close svg { width:16px; height:16px; stroke:#64748b; fill:none; }
+        .modal-body { padding:20px 22px; overflow-y:auto; flex:1; }
+        .form-group { margin-bottom:16px; }
+        .form-label { font-size:11.5px; font-weight:600; color:#475569; margin-bottom:6px; display:block; }
+        .form-select, .form-input, .form-textarea { width:100%; padding:9px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:12.5px; font-family:'Inter',sans-serif; color:#334155; outline:none; transition:all 0.15s; }
+        .form-select:focus, .form-input:focus, .form-textarea:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.08); }
+        .form-textarea { resize:vertical; min-height:60px; }
+        .form-row { display:flex; gap:12px; }
+        .form-row .form-group { flex:1; }
+        .modal-items-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:6px; }
+        .modal-items-table th { padding:7px 8px; font-size:10px; text-transform:uppercase; color:#94a3b8; text-align:left; border-bottom:1px solid #e2e8f0; }
+        .modal-items-table td { padding:8px; border-bottom:1px solid #f1f5f9; }
+        .modal-items-table input[type="number"] { width:70px; padding:5px 8px; border:1px solid #e2e8f0; border-radius:6px; font-size:12px; }
+        .modal-items-table .rm-row { background:none; border:none; cursor:pointer; color:#ef4444; }
+        .modal-items-table .rm-row svg { width:14px; height:14px; stroke:#ef4444; fill:none; }
+        .modal-footer { padding:16px 22px; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:10px; flex-shrink:0; }
+        .btn-cancel { padding:9px 18px; border-radius:8px; border:1px solid #e2e8f0; background:white; color:#334155; font-size:12.5px; font-weight:600; cursor:pointer; }
+        .btn-cancel:hover { background:#f8fafc; }
+        .btn-submit { padding:9px 18px; border-radius:8px; border:none; background:#6366f1; color:white; font-size:12.5px; font-weight:600; cursor:pointer; }
+        .btn-submit:hover { background:#4f46e5; }
+        .btn-submit:disabled { opacity:0.6; cursor:not-allowed; }
+        .modal-alert { font-size:11.5px; padding:8px 12px; border-radius:8px; margin-bottom:14px; display:none; }
+        .modal-alert.error { background:#fee2e2; color:#991b1b; display:block; }
+        .modal-alert.success { background:#d1fae5; color:#065f46; display:block; }
     </style>
 </head>
 <body>
@@ -177,6 +222,11 @@
                     <input type="text" placeholder="Search products..." class="search">
                 </div>
                 <div class="divider"></div>
+                <button type="button" class="btn-reorder" onclick="openReorderModal()">
+                    <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+                    Reorder Request
+                </button>
+                <div class="divider"></div>
                 <div class="avatar-btn">A</div>
             </div>
         </div>
@@ -222,7 +272,9 @@
                             <span class="card-title-dot" style="background:#6366f1;"></span>
                             Product List
                         </span>
-                        <span class="card-badge gray">{{ $totalProducts }} items</span>
+                        <div class="card-header-actions">
+                            <span class="card-badge gray">{{ $totalProducts }} items</span>
+                        </div>
                     </div>
                     <div style="overflow-x:auto;">
                         <table>
@@ -233,6 +285,7 @@
                                     <th>Category</th>
                                     <th>QTY</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -249,9 +302,19 @@
                                                 <span class="badge badge-green">In Stock</span>
                                             @endif
                                         </td>
+                                        <td>
+                                            @if($item->qty <= 10)
+                                                <button type="button" class="btn-row-reorder" onclick='openReorderModal({id: {{ $item->id }}, sku: @json($item->sku), name: @json($item->productName), qty: {{ $item->qty }}})'>
+                                                    <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+                                                    Reorder
+                                                </button>
+                                            @else
+                                                <span style="color:#cbd5e1; font-size:11px;">&mdash;</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="5">
+                                    <tr><td colspan="6">
                                         <div class="empty-state">
                                             <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
                                             No products added yet.
@@ -292,5 +355,158 @@
             </div>
         </div>
     </div>
+
+    <!-- REORDER REQUEST MODAL -->
+    <div class="modal-overlay" id="reorderModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Reorder request</div>
+                    <div class="modal-subtitle">Sends a stock request order to procurement</div>
+                </div>
+                <button type="button" class="modal-close" onclick="closeReorderModal()">
+                    <svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="reorderForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="modal-alert" id="reorderAlert"></div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Warehouse / branch</label>
+                            <select class="form-select" name="warehouse_id">
+                                <option value="1">Main warehouse</option>
+                                <option value="2">North branch</option>
+                                <option value="3">South branch</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Send to</label>
+                            <select class="form-select" name="department">
+                                <option value="procurement">Procurement dept.</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Items to reorder</label>
+                        <table class="modal-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>On hand</th>
+                                    <th>Qty to request</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="reorderItemsBody">
+                                <!-- rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" name="notes" placeholder="Optional notes for procurement..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeReorderModal()">Cancel</button>
+                    <button type="submit" class="btn-submit" id="reorderSubmitBtn">Send request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let reorderItems = [];
+
+        function openReorderModal(preselectedItem) {
+            reorderItems = preselectedItem ? [{...preselectedItem, requestQty: Math.max((preselectedItem.qty || 0) * 3, 10)}] : [];
+            renderReorderItems();
+            document.getElementById('reorderAlert').style.display = 'none';
+            document.getElementById('reorderModal').classList.add('open');
+        }
+
+        function closeReorderModal() {
+            document.getElementById('reorderModal').classList.remove('open');
+        }
+
+        function renderReorderItems() {
+            const body = document.getElementById('reorderItemsBody');
+            if (reorderItems.length === 0) {
+                body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:16px;">No item selected. Use the Reorder button on a low stock item, or add one below.</td></tr>';
+                return;
+            }
+            body.innerHTML = reorderItems.map((it, idx) => `
+                <tr>
+                    <td>
+                        <div style="font-weight:600; color:#0f172a;">${it.name}</div>
+                        <div style="color:#94a3b8; font-size:11px;">${it.sku}</div>
+                    </td>
+                    <td>${it.qty}</td>
+                    <td><input type="number" min="1" value="${it.requestQty}" onchange="reorderItems[${idx}].requestQty = parseInt(this.value) || 1"></td>
+                    <td><button type="button" class="rm-row" onclick="removeReorderItem(${idx})"><svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td>
+                </tr>
+            `).join('');
+        }
+
+        function removeReorderItem(idx) {
+            reorderItems.splice(idx, 1);
+            renderReorderItems();
+        }
+
+        document.getElementById('reorderModal').addEventListener('click', function(e) {
+            if (e.target === this) closeReorderModal();
+        });
+
+        document.getElementById('reorderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('reorderAlert');
+            const submitBtn = document.getElementById('reorderSubmitBtn');
+
+            if (reorderItems.length === 0) {
+                alertBox.className = 'modal-alert error';
+                alertBox.textContent = 'Add at least one item before sending the request.';
+                return;
+            }
+
+            const payload = {
+                warehouse_id: this.warehouse_id.value,
+                department: this.department.value,
+                notes: this.notes.value,
+                items: reorderItems.map(it => ({ product_id: it.id, sku: it.sku, qty: it.requestQty }))
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
+            try {
+                const res = await fetch("{{ route('reorder.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error('Request failed');
+
+                alertBox.className = 'modal-alert success';
+                alertBox.textContent = 'Reorder request sent to procurement.';
+                setTimeout(() => { closeReorderModal(); location.reload(); }, 900);
+            } catch (err) {
+                alertBox.className = 'modal-alert error';
+                alertBox.textContent = 'Could not send the request. Please try again.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send request';
+            }
+        });
+    </script>
 </body>
 </html>
